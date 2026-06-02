@@ -3,24 +3,31 @@ import numpy as np
 import json
 import platform
 
-# Intentar cargar tf_keras para compatibilidad con modelos antiguos
+# Intentar cargar tf_keras para compatibilidad con Keras 3
 try:
     import tf_keras as keras
 except ImportError:
     import tensorflow.keras as keras
 
 st.set_page_config(
-    page_title="Generador LSTM",
-    page_icon="🧠",
+    page_title="Generador LSTM Morado",
+    page_icon="🔮",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+# Estética Morada (Purple Aesthetic)
 st.markdown("""
 <style>
-    .main-title { font-size: 2.2rem; font-weight: 700; color: #764ba2; }
-    .generated-text { background: #f8f9fa; border-radius: 12px; padding: 1.5rem; font-family: Georgia, serif; line-height: 1.8; border-left: 5px solid #764ba2; }
-    .stApp { background-color: #fcfcfc; }
+    .stApp { background-color: #f3e5f5; color: #4a148c !important; }
+    .main-title { font-size: 2.5rem; font-weight: 700; color: #7b1fa2; text-align: center; }
+    .generated-text { 
+        background: #ffffff; border-radius: 12px; padding: 1.5rem; 
+        font-family: Georgia, serif; line-height: 1.8; 
+        border-left: 5px solid #8e24aa; color: #4a148c;
+    }
+    div.stButton > button { background-color: #8e24aa !important; color: white !important; border-radius: 12px; }
+    section[data-testid="stSidebar"] { background-color: #e1bee7 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -52,12 +59,11 @@ def generate_text(model, seed, char_to_idx, idx_to_char, seq_len, n_chars, temp)
         generated += next_char
     return generated[len(seed):]
 
-# UI
-st.markdown('<h1 class="main-title">🧠 Generador de Texto LSTM</h1>', unsafe_allow_html=True)
-st.write(f"Versión Python: {platform.python_version()}")
+# UI Principal
+st.markdown('<h1 class="main-title">🔮 Generador de Texto LSTM</h1>', unsafe_allow_html=True)
 
 with st.sidebar:
-    st.header("Configuración")
+    st.header("⚙️ Configuración")
     model_file = st.file_uploader("Modelo (.keras o .h5)", type=["keras", "h5"])
     meta_file = st.file_uploader("Metadatos (.json)", type=["json"])
     temp = st.slider("Temperatura", 0.1, 2.0, 0.8)
@@ -70,9 +76,11 @@ if model_file and meta_file:
     
     if model:
         seed = st.text_area("Texto semilla", "en un lugar de la mancha")
-        if st.button("Generar"):
+        if st.button("Generar texto mágico"):
             res = generate_text(model, seed.lower(), meta["char_to_idx"], 
                                meta["idx_to_char"], meta["seq_length"], 200, temp)
             st.markdown(f'<div class="generated-text">{seed + res}</div>', unsafe_allow_html=True)
     else:
-        st.error(f"Error: {err}")
+        st.error(f"Error al cargar el modelo: {err}")
+else:
+    st.info("👈 Por favor, carga el modelo y los metadatos en la barra lateral para comenzar.")
